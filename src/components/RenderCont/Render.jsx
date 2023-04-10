@@ -1,15 +1,15 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { List, Item, Button, Name } from './Render.styled';
-import { selectContacts, selectFilter } from '../../redux/selectors';
+import { getContacts, getFilter } from '../../redux/selectors';
 import { useSelector } from 'react-redux';
 import { useDispatch } from 'react-redux';
 import { deleteContact } from 'redux/contactSlice';
 
 export const RenderContact = () => {
   const dispatch = useDispatch();
-  const contacts = useSelector(selectContacts);
-  const filter = useSelector(selectFilter);
+  const contacts = useSelector(getContacts);
+  const filter = useSelector(getFilter);
   const filterContact = contacts.filter(cont =>
     cont.name.toLowerCase().includes(filter.toLowerCase())
   );
