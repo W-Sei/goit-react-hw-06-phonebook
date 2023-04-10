@@ -16,7 +16,7 @@ export const App = () => {
       <AddContact />
 
       <ContactsWrapper>
-        <TitleContact>Contacts:</TitleContact>
+        <TitleContact>Contacts</TitleContact>
         <FilterContact />
         <RenderContact />
       </ContactsWrapper>
