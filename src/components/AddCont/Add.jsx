@@ -1,8 +1,12 @@
 import React from 'react';
 import { Formik } from 'formik';
-import PropTypes from 'prop-types';
-import { nanoid } from 'nanoid';
+import Notiflix from 'notiflix';
 import { object, string } from 'yup';
+import { addContact } from 'redux/contactSlice';
+import { useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
+import { getContacts } from '../../redux/selectors';
+
 
 import {
   FormSection,
@@ -13,34 +17,45 @@ import {
 } from './Add.styled';
 
 const userSchema = object({
-  name: string().required(),
+  nameContact: string().required(),
   number: string().required().min(5).max(20),
 });
 
-export const AddContact = ({ handleSubmit }) => {
+export const AddContact = () => {
+
+  const dispatch = useDispatch();
+  const contacts = useSelector(getContacts);
+
+  function handleSubmit(values, { resetForm }) {
+    const isName = contacts.some(
+      contact => contact.name.toLowerCase() === values.nameContact.toLowerCase()
+    );
+
+    if (isName) {
+      Notiflix.Notify.info(`${values.nameContact} is already in contacts`);
+      return;
+    } else {
+      dispatch(addContact(values));
+      resetForm();
+    }
+  }
   
   return (
     <Formik
-      initialValues={{ name: '', number: '' }}
-      onSubmit={(values, { resetForm }) => {
-        handleSubmit({
-          ...values,
-          id: nanoid(),
-        });
-        resetForm();
-      }}
+      initialValues={{ nameContact: '', number: '' }}
+      onSubmit={handleSubmit}
       validationSchema={userSchema}
     >
       <FormSection>
         <InputTitle>Name</InputTitle>
         <AddNumberInput
           type="text"
-          name="name"
+          name="nameContact"
           pattern="^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"
           title="Name may contain only letters, apostrophe, dash and spaces. For example Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan"
           required
         />
-        <ErrorMes name="name" component="div" />
+        <ErrorMes name="nameContact" component="div" />
         <InputTitle>Number</InputTitle>
         <AddNumberInput
           type="tel"
@@ -56,6 +71,4 @@ export const AddContact = ({ handleSubmit }) => {
   );
 };
 
-AddContact.propTypes = {
-  handleSubmit: PropTypes.func.isRequired,
-};
+
